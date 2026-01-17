@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XUSN·SPACE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        y2k: {
+                            pink: '#ff6b9d',
+                            yellow: '#f8b500',
+                            cyan: '#00f5d4',
+                            purple: '#9b5de5',
+                            black: '#000000',
+                            white: '#ffffff',
+                            gray: '#f8f8f8',
+                            cream: '#fff8f0',
+                            peach: '#ffe4e1',
+                            mint: '#e0f7fa'
+                        }
+                    },
+                    fontFamily: {
+                        pixel: ['VT323', 'monospace'],
+                    },
+                    boxShadow: {
+                        'pixel': '4px 4px 0 0 #000',
+                        'pixel-lg': '8px 8px 0 0 #000',
+                        'soft': '0 10px 30px rgba(255, 107, 157, 0.15)',
+                        'float': '0 15px 40px rgba(0, 0, 0, 0.15)',
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .pixel-border {
+                border: 3px solid #000;
+                box-shadow: 4px 4px 0 0 #000;
+                transition: all 0.3s ease;
+            }
+            .pixel-border:hover {
+                transform: translate(2px, 2px);
+                box-shadow: 2px 2px 00 #000;
+            }
+            .pixel-border-lg {
+                border: 4px solid #000;
+                box-shadow: 8px 8px 0 0 #000;
+            }
+            .pixel-text {
+                text-shadow: 2px 2px 0 #000;
+            }
+            
+            .dynamic-grid {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                background-image: 
+                    linear-gradient(rgba(255, 107, 157, 0.08) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(248, 181, 0, 0.08) 1px, transparent 1px);
+                background-size: 50px 50px;
+                animation: gridMove 20s linear infinite;
+                pointer-events: none;
+            }
+            
+            @keyframes gridMove {
+                0% { background-position: 0 0; }
+                100% { background-position: 50px 50px; }
+            }
+            
+            .geo-shape {
+                position: fixed;
+                opacity: 0.15;
+                pointer-events: none;
+                z-index: -1;
+                filter: blur(1px);
+            }
+            
+            .geo-1 {
+                top: 15%;
+                left: 8%;
+                width: 120px;
+                height: 120px;
+                background: linear-gradient(45deg, #ff6b9d, #f8b500);
+                clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+                animation: rotate 15s linear infinite;
+            }
+            
+            .geo-2 {
+                top: 45%;
+                right: 10%;
+                width: 80px;
+                height: 80px;
+                background: linear-gradient(135deg, #00f5d4, #9b5de5);
+                border-radius: 50%;
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            .geo-3 {
+                bottom: 20%;
+                left: 15%;
+                width: 100px;
+                height: 100px;
+                background: linear-gradient(90deg, #f8b500, #ff6b9d);
+                transform: rotate(30deg);
+                animation: pulse 8s ease-in-out infinite;
+            }
+            
+            @keyframes rotate {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            
+            @keyframes float {
+                0%, 100% { transform: translateY(0) scale(1); }
+                50% { transform: translateY(-20px) scale(1.1); }
+            }
+            
+            @keyframes pulse {
+                0%, 100% { transform: scale(1) rotate(30deg); opacity: 0.15; }
+                50% { transform: scale(1.2) rotate(45deg); opacity: 0.25; }
+            }
+            
+            .smart-nav {
+                position: fixed;
+                top: 15px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 30px);
+                max-width: 1200px;
+                z-index: 1000;
+                border-radius: 16px;
+                background: rgba(255, 255, 255, 0.88);
+                backdrop-filter: blur(15px);
+                border: 3px solid #000;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            
+            .smart-nav.scrolled {
+                top: 0;
+                left: 0;
+                transform: translateX(0);
+                width: 100%;
+                border-radius: 0;
+                border-width: 0 0 3px 0;
+                background: rgba(255, 255, 255, 0.96);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            }
+            
+            .smart-nav.hidden {
+                transform: translateX(-50%) translateY(-120%);
+            }
+            
+            .smart-nav.scrolled.hidden {
+                transform: translateY(-120%);
+            }
+            
+            .smart-nav:hover {
+                transform: translateX(-50%) translateY(-2px);
+                box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18), 
+                            0 4px 12px rgba(255, 107, 157, 0.25);
+                background: rgba(255, 255, 255, 0.95);
+            }
+            
+            .smart-nav.scrolled:hover {
+                transform: translateX(0) translateY(-1px);
+            }
+            
+            .nav-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                position: relative;
+            }
+            
+            .brand-logo {
+                font-size: 1.5rem;
+                font-weight: bold;
+                letter-spacing: 1px;
+                transition: all 0.3s ease;
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .brand-logo::before {
+                content: '▶';
+                color: #ff6b9d;
+                opacity: 0;
+                transition: all 0.3s ease;
+                font-size: 1.2rem;
+            }
+            
+            .brand-logo:hover {
+                transform: scale(1.05);
+                text-shadow: 2px 2px 0 #000, 0 0 10px rgba(255, 107, 157, 0.4);
+            }
+            
+            .brand-logo:hover::before {
+                opacity: 1;
+                transform: translateX(3px);
+            }
+            
+            .menu-toggle {
+                width: 50px;
+                height: 40px;
+                background: rgba(255, 255, 255, 0.6);
+                border: 2px solid #000;
+                border-radius: 8px;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 4px;
+                transition: all 0.3s ease;
+            }
+            
+            .menu-toggle:hover {
+                background: rgba(255, 107, 157, 0.2);
+                transform: translateY(-2px);
+            }
+            
+            .menu-toggle span {
+                width: 24px;
+                height: 2px;
+                background: #000;
+                transition: all 0.3s ease;
+            }
+            
+            .menu-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+            
+            .menu-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+            
+            .menu-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+            
+            .dropdown-menu {
+                position: absolute;
+                top: 100%;
+                right: 20px;
+                margin-top: 10px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border: 3px solid #000;
+                border-radius: 12px;
+                padding: 8px;
+                min-width: 180px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+                display: none;
+                transition: all 0.3s ease;
+            }
+            
+            .dropdown-menu.active {
+                display: block;
+                animation: slideDown 0.3s ease;
+            }
+            
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .dropdown-menu a {
+                display: block;
+                padding: 10px 14px;
+                border-radius: 8px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                transition: all 0.3s ease;
+                border: 2px solid transparent;
+                margin: 2px 0;
+            }
+            
+            .dropdown-menu a:hover {
+                background: rgba(255, 107, 157, 0.15);
+                border-color: #ff6b9d;
+                transform: translateX(3px);
+                color: #ff6b9d;
+            }
+            
+            .glass-card {
+                background: rgba(255, 255, 255, 0.7);
+                backdrop-filter: blur(10px);
+                border: 2px solid rgba(0, 0, 0, 0.1);
+            }
+            
+            .animate-float {
+                animation: float 3s ease-in-out infinite;
+            }
+            
+            .animate-bounce-slow {
+                animation: bounce 2s infinite;
+            }
+            
+            @keyframes float {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-8px); }
+            }
+            
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-12px); }
+            }
+            
+            #home, #work, #contact {
+                scroll-margin-top: 90px;
+            }
+            
+            .ripple-btn {
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .ripple {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.6);
+                transform: scale(0);
+                animation: ripple-animation 0.6s linear;
+                pointer-events: none;
+            }
+            
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+            
+            .social-link {
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .social-link::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                transition: left 0.5s ease;
+            }
+            
+            .social-link:hover::before {
+                left: 100%;
+            }
+            
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(5px);
+                z-index: 2000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .modal-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .modal-content {
+                background: #fff;
+                border: 4px solid #000;
+                box-shadow: 8px 8px 0 0 #000;
+                border-radius: 12px;
+                padding: 30px;
+                max-width: 450px;
+                width: 90%;
+                transform: scale(0.8);
+                transition: all 0.3s ease;
+                text-align: center;
+            }
+            
+            .modal-overlay.active .modal-content {
+                transform: scale(1);
+            }
+            
+            .close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 30px;
+                height: 30px;
+                background: #ff6b9d;
+                border: 2px solid #000;
+                border-radius: 50%;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                color: #fff;
+                transition: all 0.3s ease;
+            }
+            
+            .close-btn:hover {
+                transform: rotate(90deg) scale(1.1);
+                background: #f8b500;
+            }
+            
+            .qr-display {
+                width: 280px;
+                height: 280px;
+                margin: 20px auto;
+                background: #f8f8f8;
+                border: 3px solid #000;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 4px 4px 0 0 #000;
+            }
+            
+            .qr-display canvas,
+            .qr-display img {
+                max-width: 100%;
+                max-height: 100%;
+                padding: 10px;
+                background: #fff;
+            }
+            
+            .success-message {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+                background: #fff;
+                border: 4px solid #000;
+                box-shadow: 8px 8px 0 0 #000;
+                border-radius: 12px;
+                padding: 20px 40px;
+                z-index: 2001;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                text-align: center;
+            }
+            
+            .success-message.active {
+                opacity: 1;
+                visibility: visible;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            
+            .random-quote {
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 20px 0;
+                padding: 15px 25px;
+                background: rgba(255, 255, 255, 0.6);
+                border: 2px solid #000;
+                border-radius: 12px;
+                box-shadow: 4px 4px 0 0 #000;
+                font-size: 1.2rem;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                min-height: 80px;
+            }
+            
+            .random-quote:hover {
+                transform: translate(2px, 2px);
+                box-shadow: 2px 2px 0 0 #000;
+                background: rgba(255, 255, 255, 0.8);
+            }
+            
+            .random-quote::before {
+                content: '"';
+                position: absolute;
+                top: -10px;
+                left: 10px;
+                font-size: 3rem;
+                color: #ff6b9d;
+                opacity: 0.3;
+                font-family: Georgia, serif;
+            }
+            
+            .loading {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 3px solid rgba(255, 107, 157, 0.3);
+                border-radius: 50%;
+                border-top-color: #ff6b9d;
+                animation: spin 1s ease-in-out infinite;
+            }
+            
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+            
+            .quote-clicked {
+                animation: clickFeedback 0.3s ease;
+            }
+            
+            @keyframes clickFeedback {
+                0% { transform: scale(1); }
+                50% { transform: scale(0.95); }
+                100% { transform: scale(1); }
+            }
+            
+            .qr-loading {
+                padding: 20px;
+                color: #ff6b9d;
+                font-weight: bold;
+            }
+
+            /* 交互式QQ头像容器 - 默认圆角矩形 */
+            .qq-avatar-container {
+                width: 160px;
+                height: 160px;
+                margin: 0 auto;
+                border-radius: 30%; /* 圆角矩形 */
+                background: linear-gradient(135deg, #ff6b9d, #f8b500);
+                border: 4px solid #000;
+                box-shadow: 8px 8px 0 0 #000;
+                overflow: hidden;
+                position: relative;
+                cursor: pointer;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: float 3s ease-in-out infinite;
+            }
+            
+            .qq-avatar-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: all 0.4s ease;
+            }
+            
+            /* 悬停效果 */
+            .qq-avatar-container:hover {
+                transform: translateY(-5px) scale(1.05);
+                box-shadow: 4px 4px 0 0 #000;
+            }
+            
+            .qq-avatar-container:hover img {
+                transform: scale(1.15);
+            }
+            
+            /* 点击后的形状变化 */
+            .qq-avatar-container.shape-1 {
+                border-radius: 50%;
+                transform: scale(0.9);
+                animation: pulse 1s ease-in-out infinite;
+            }
+            
+            .qq-avatar-container.shape-2 {
+                border-radius: 8px;
+                transform: rotate(-15deg) scale(1.05);
+                background: linear-gradient(135deg, #00f5d4, #9b5de5);
+                animation: shake 0.5s ease-in-out infinite;
+            }
+            
+            .qq-avatar-container.shape-3 {
+                border-radius: 50%;
+                transform: scale(0.9);
+                background: linear-gradient(135deg, #f8b500, #ff6b9d);
+                animation: bounce 0.6s ease-in-out infinite;
+            }
+            
+            @keyframes shake {
+                0%, 100% { transform: rotate(-15deg) translateX(0); }
+                25% { transform: rotate(-15deg) translateX(-3px); }
+                75% { transform: rotate(-15deg) translateX(3px); }
+            }
+            
+            /* QQ头像加载失败时的动态备用样式 */
+            .avatar-fallback {
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #ff6b9d, #f8b500);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 3.5rem;
+                color: #fff;
+                text-shadow: 2px 2px 0 #000;
+                animation: emojiFloat 3s ease-in-out infinite;
+            }
+            
+            @keyframes emojiFloat {
+                0%, 100% { transform: translateY(0) rotate(0deg); }
+                50% { transform: translateY(-8px) rotate(10deg); }
+            }
+            
+            /* 英雄区域优化 -增加上边距 */
+            .hero-section {
+                min-height: 90vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 100px 20px 60px;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            /* 作品集图片容器 */
+            .work-thumbnail {
+                width: 100%;
+                height: 180px;
+                margin-bottom: 16px;
+                border-radius: 12px;
+                overflow: hidden;
+                border: 3px solid #000;
+                box-shadow: 4px 4px 0 0 #000;
+                position: relative;
+                background: #f0f0f0;
+            }
+            
+            .work-thumbnail img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: all 0.3s ease;
+            }
+            
+            .work-thumbnail:hover img {
+                transform: scale(1.1);
+            }
+            
+            .work-thumbnail.loading::after {
+                content: '加载中...';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: #ff6b9d;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+
+            .work-thumbnail.error::after {
+                content: '🖼️';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 3rem;
+            }
+
+            /*翻页卡片容器 */
+            .flip-card-container {
+                perspective: 1000px;
+                width: 100%;
+                max-width: 500px;
+                height: 280px;
+                margin: 30px auto;
+            }
+
+            .flip-card {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                transition: transform 0.6s;
+                transform-style: preserve-3d;
+                cursor: pointer;
+            }
+
+            .flip-card.flipped {
+                transform: rotateY(180deg);
+            }
+
+            .flip-card-front,
+            .flip-card-back {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                backface-visibility: hidden;
+                border-radius: 16px;
+                border: 4px solid #000;
+                box-shadow: 8px 8px 0 0 #000;
+                overflow: hidden;
+            }
+
+            .flip-card-front {
+                background: linear-gradient(135deg, #ff6b9d, #f8b500);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .flip-card-front:hover {
+                background: linear-gradient(135deg, #ff6b9d, #f8b500);
+                filter: brightness(1.1);
+            }
+
+            .flip-card-back {
+                background: #fff;
+                transform: rotateY(180deg);
+                padding: 24px;
+                overflow-y: auto;
+            }
+
+            .flip-card-front h3 {
+                font-size: 2rem;
+                margin-bottom: 10px;
+                text-shadow: 2px 2px 0 #000;
+            }
+
+            .flip-card-front p {
+                font-size: 1.2rem;
+                opacity: 0.9;
+            }
+
+            .flip-card-front .click-hint {
+                margin-top: 15px;
+                font-size: 1rem;
+                opacity: 0.8;
+                animation: bounce 2s infinite;
+            }
+
+            .flip-card-back h4 {
+                color: #ff6b9d;
+                font-size: 1.5rem;
+                margin-bottom: 12px;
+                text-shadow: 1px 1px 0 #000;
+            }
+
+            .flip-card-back p {
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin-bottom: 15px;
+                color: #333;
+            }
+
+            .skills-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 12px;
+            }
+
+            .skills-list span {
+                padding: 4px 10px;
+                background: #f8f8f8;
+                border: 2px solid #000;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                font-weight: bold;
+            }
+
+            .flip-hint {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: #000;
+                color: #fff;
+                padding: 4px 8px;
+                border-radius: 6px;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+
+            /* 作品集和技能栈区域 */
+            .work-section {
+                background: rgba(255, 255, 255, 0.3);
+                padding: 60px 20px;
+            }
+
+            /* 联系方式 - 移除背景，使用统一背景 */
+            .contact-section {
+                padding: 80px 20px;
+            }
+        }
+    </style>
+</head>
+<body class="font-pixel bg-y2k-cream text-y2k-black">
+
+    <!-- 动态网格背景 -->
+    <div class="dynamic-grid"></div>
+    
+    <!-- 动态几何图形装饰 -->
+    <div class="geo-shape geo-1"></div>
+    <div class="geo-shape geo-2"></div>
+    <div class="geo-shape geo-3"></div>
+
+    <!-- 智能导航栏 - 折叠菜单版（修复版） -->
+    <nav id="smartNav" class="smart-nav">
+        <div class="nav-content">
+            <div class="brand-logo text-y2k-pink pixel-text">
+                XUSN·SPACE
+            </div>
+            
+            <!-- 菜单切换按钮 -->
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <!-- 下拉菜单 - 修复版 -->
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="#home" class="hover:text-y2k-pink">首页</a>
+                <a href="#work" class="hover:text-y2k-cyan">作品</a>
+                <a href="#contact" class="hover:text-y2k-purple">联系</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 - 个人介绍（优化排版） -->
+    <header id="home" class="hero-section">
+        <!-- 装饰性像素元素 -调整位置避免重叠 -->
+        <div class="absolute top-32 left-8 w-6 h-6 bg-y2k-pink animate-float"></div>
+        <div class="absolute top-48 right-8 w-8 h-8 bg-y2k-yellow animate-bounce-slow"></div>
+        <div class="absolute bottom-24 left-1/4 w-4 h-4 bg-y2k-cyan animate-float"></div>
+        <div class="absolute bottom-16 right-1/3 w-5 h-5 bg-y2k-purple animate-bounce-slow"></div>
+        
+        <div class="text-center max-w-4xl relative z-10">
+            <!-- 交互式QQ头像 - 默认圆角矩形 -->
+            <div class="qq-avatar-container" id="qqAvatarContainer">
+                <img id="qqAvatar" src="https://q.qlogo.cn/headimg_dl?bs=2687821674&img_type=10&size=100" 
+                     alt="QQ头像" 
+                     onerror="handleAvatarError()">
+            </div>
+
+            <h1 class="text-5xl md:text-8xl font-bold mb-4 pixel-text text-y2k-black mt-6">
+                HI·I'M <span class="text-y2k-pink">XUSN</span>
+            </h1>
+            <p class="text-xl md:text-3xl mb-6 text-y2k-black/80">
+                DEVELOPMENT · FURRY · CODING
+            </p>
+            
+            <!-- 随机一言API区域 - 点击刷新，页面加载也刷新 -->
+            <div class="random-quote" id="randomQuote" onclick="fetchQuote()">
+                <span id="quoteText">点击获取随机一言</span>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-3 mt-6">
+                <a href="#work" class="ripple-btn pixel-border bg-y2k-pink text-white px-8 py-4 rounded text-xl hover:bg-y2k-purple transition-colors">
+                    查看作品
+                </a>
+                <a href="#contact" class="ripple-btn pixel-border bg-y2k-white text-y2k-black px-8 py-4 rounded text-xl hover:bg-y2k-yellow transition-colors">
+                    联系我
+                </a>
+            </div>
+        </div>
+        
+        <!-- 半透磨砂背景 -->
+        <div class="absolute inset-0 bg-gradient-to-br from-white/60 to-y2k-cream/60 backdrop-blur-xs -z-10"></div>
+    </header>
+
+    <!-- 翻页卡片 - 关于我 + 技能合并 -->
+    <section id="about" class="work-section py-10">
+        <div class="container mx-auto max-w-5xl">
+            <div class="flip-card-container">
+                <div class="flip-card" id="flipCard">
+                    <!-- 正面 -->
+                    <div class="flip-card-front">
+                        <h3>关于我</h3>
+                        <p>高中生 · 设计爱好者</p>
+                        <div class="click-hint">点击翻开</div>
+                        <div class="flip-hint">CLICK</div>
+                    </div>
+                    
+                    <!-- 背面 -->
+                    <div class="flip-card-back">
+                        <h4>👋 嗨！我是XUSN</h4>
+                        <p>一名正在读高中的设计爱好者，热爱Y2K复古风格和前端开发。</p>
+                        <p>喜欢用代码创造有趣的交互体验，让网页变得温暖又有个性。</p>
+                        
+                        <h4 style="margin-top: 16px; color: #00f5d4;">✨ 我的技能</h4>
+                        <div class="skills-list">
+                            <span>🎨 Figma</span>
+                            <span>💻 HTML/CSS</span>
+                            <span>⚡ Tailwind</span>
+                            <span>🎯 Photoshop</span>
+                            <span>✨ Illustrator</span>
+                            <span>🚀 React</span>
+                        </div>
+                        
+                        <p style="margin-top: 12px; font-size: 0.9rem; opacity: 0.7;">正在学习中... 保持热爱，持续进步！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 作品集部分 -->
+    <section id="work" class="work-section">
+        <div class="container mx-auto max-w-5xl">
+            <h2 class="text-4xl md:text-6xl text-center mb-12 pixel-text text-y2k-black">
+                作品集『待开发』
+            </h2>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 作品1：个人博客 -->
+                <div class="glass-card pixel-border-lg rounded-xl p-6 hover:shadow-soft transition-all">
+                    <div class="work-thumbnail loading" data-work="1">
+                        <img alt="作品略缩图" onerror="handleThumbnailError(this)">
+                    </div>
+                    <h3 class="text-2xl text-y2k-cyan mb-2 pixel-text">个人博客</h3>
+                    <p class="text-lg mb-4">温暖治愈的博客主题，让阅读成为一种享受。</p>
+                    <a href="#" class="text-y2k-black hover:text-y2k-cyan underline font-bold">查看详情 →</a>
+                </div>
+
+                <!-- 作品2：组件库 -->
+                <div class="glass-card pixel-border-lg rounded-xl p-6 hover:shadow-soft transition-all">
+                    <div class="work-thumbnail loading" data-work="2">
+                        <img alt="作品略缩图" onerror="handleThumbnailError(this)">
+                    </div>
+                    <h3 class="text-2xl text-y2k-purple mb-2 pixel-text">Y2K组件库</h3>
+                    <p class="text-lg mb-4">复古风格的UI组件库，即插即用。</p>
+                    <a href="#" class="text-y2k-black hover:text-y2k-purple underline font-bold">查看详情 →</a>
+                </div>
+
+                <!-- 作品3：主页（当前页面） -->
+                <div class="glass-card pixel-border-lg rounded-xl p-6 hover:shadow-soft transition-all">
+                    <div class="work-thumbnail loading" data-work="3">
+                        <img alt="作品略缩图" onerror="handleThumbnailError(this)">
+                    </div>
+                    <h3 class="text-2xl text-y2k-pink mb-2 pixel-text">个人主页</h3>
+                    <p class="text-lg mb-4">Y2K风格的个人展示页面，温暖而有趣。</p>
+                    <a href="#home" class="text-y2k-black hover:text-y2k-pink underline font-bold">查看详情 →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系方式 - 移除背景，使用统一背景 -->
+    <section id="contact" class="contact-section">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-4xl md:text-6xl text-center mb-8 pixel-text text-y2k-black">
+                找我聊聊
+            </h2>
+            <p class="text-xl md:text-2xl text-center mb-8 text-y2k-black/80">
+                有项目合作或想交个朋友？随时联系我！
+            </p>
+            
+            <!-- 留言表单 -->
+            <form id="contactForm" class="glass-card pixel-border-lg rounded-xl p-8 mb-10">
+                <div class="mb-5">
+                    <label class="block text-lg mb-2 font-bold">您的姓名</label>
+                    <input type="text" id="userName" required class="w-full px-4 py-3 pixel-border rounded bg-white/80 focus:outline-none focus:ring-2 focus:ring-y2k-pink" placeholder="怎么称呼您？">
+                </div>
+                <div class="mb-5">
+                    <label class="block text-lg mb-2 font-bold">您的邮箱</label>
+                    <input type="email" id="userEmail" required class="w-full px-4 py-3 pixel-border rounded bg-white/80 focus:outline-none focus:ring-2 focus:ring-y2k-yellow" placeholder="your@email.com">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-lg mb-2 font-bold">留言内容</label>
+                    <textarea id="userMessage" required class="w-full px-4 py-3 pixel-border rounded bg-white/80 focus:outline-none focus:ring-2 focus:ring-y2k-cyan h-36" placeholder="想对我说些什么..."></textarea>
+                </div>
+                <button type="submit" class="ripple-btn w-full pixel-border bg-y2k-purple text-white px-6 py-3 rounded text-lg hover:bg-y2k-pink transition-colors">
+                    发送消息
+                </button>
+            </form>
+
+            <!-- 社交链接 - 四大平台 -->
+            <div class="glass-card pixel-border-lg rounded-xl p-8 text-center">
+                <h3 class="text-2xl mb-6 pixel-text text-y2k-black">也可以在这里找到我</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- 邮箱 -->
+                    <a href="mailto:un@xusn.dev" class="social-link ripple-btn pixel-border bg-y2k-white text-y2k-black px-4 py-4 rounded hover:bg-y2k-pink hover:text-white transition-colors font-bold flex flex-col items-center gap-2">
+                        <span class="text-2xl">📧</span>
+                        <span class="text-sm">邮箱</span>
+                    </a>
+                    
+                    <!-- 公众号 - 二维码弹窗 -->
+                    <button onclick="openQRModal()" class="social-link ripple-btn pixel-border bg-y2k-white text-y2k-black px-4 py-4 rounded hover:bg-y2k-cyan transition-colors font-bold flex flex-col items-center gap-2 cursor-pointer w-full text-center">
+                        <span class="text-2xl">📝</span>
+                        <span class="text-sm">公众号</span>
+                    </button>
+                    
+                    <!-- 小红书 -->
+                    <a href="https://xhslink.com/m/3QRw1wru5Eh" target="_blank" class="social-link ripple-btn pixel-border bg-y2k-white text-y2k-black px-4 py-4 rounded hover:bg-y2k-yellow transition-colors font-bold flex flex-col items-center gap-2">
+                        <span class="text-2xl">🍠</span>
+                        <span class="text-sm">小红书</span>
+                    </a>
+                    
+                    <!-- GitHub -->
+                    <a href="https://github.com/XiaoQius" target="_blank" class="social-link ripple-btn pixel-border bg-y2k-white text-y2k-black px-4 py-4 rounded hover:bg-y2k-purple hover:text-white transition-colors font-bold flex flex-col items-center gap-2">
+                        <span class="text-2xl">🐙</span>
+                        <span class="text-sm">GitHub</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="py-10 px-4 bg-y2k-black text-white border-t-4 border-black">
+        <div class="container mx-auto text-center">
+            <div class="flex justify-center gap-6 mb-4 flex-wrap text-lg">
+                <a href="#home" class="hover:text-y2k-pink transition-colors">首页</a>
+                <a href="#work" class="hover:text-y2k-cyan transition-colors">作品</a>
+                <a href="#contact" class="hover:text-y2k-purple transition-colors">联系</a>
+            </div>
+            <p class="text-lg opacity-75 mb-2">
+                © 2026 XUSN Design. Made with Y2K vibes & warm colors.
+            </p>
+            <p class="text-sm opacity-50">
+                Powered by Tailwind CSS · VT323 Font · Retro Future
+            </p>
+        </div>
+    </footer>
+
+    <!-- 公众号二维码弹窗 - 已配置 -->
+    <div id="qrModal" class="modal-overlay">
+        <div class="modal-content" style="position: relative;">
+            <div class="close-btn" onclick="closeQRModal()">×</div>
+            <h3 class="text-2xl pixel-text mb-4 text-y2k-pink">扫码关注公众号</h3>
+            
+            <!-- 二维码显示区域 -->
+            <div id="qrDisplay" class="qr-display">
+                <div class="qr-loading">二维码生成中...</div>
+            </div>
+            
+            <p class="text-lg font-bold mt-3 mb-1">扫描二维码</p>
+            <p class="text-sm opacity-75">关注获取最新动态</p>
+            
+            <button onclick="generateQRCode()" class="ripple-btn pixel-border bg-y2k-purple text-white px-6 py-2 rounded hover:bg-y2k-pink transition-colors mt-3">
+                重新生成
+            </button>
+        </div>
+    </div>
+
+    <!-- 成功提示 -->
+    <div id="successMessage" class="success-message">
+        <h3 class="text-2xl pixel-text text-y2k-pink mb-2">发送成功！</h3>
+        <p>感谢您的留言，我会通过邮箱尽快回复您。😊</p>
+    </div>
+
+    <!-- 智能导航栏交互脚本 -->
+    <script>
+        // 随机一言API - 励志类（保持不变）
+        const HITOKOTO_API = 'https://v1.hitokoto.cn';
+        
+        // 获取随机一言（保持不变）
+        async function fetchQuote() {
+            const quoteText = document.getElementById('quoteText');
+            const quoteContainer = document.getElementById('randomQuote');
+            
+            quoteContainer.classList.add('quote-clicked');
+            setTimeout(() => quoteContainer.classList.remove('quote-clicked'), 300);
+            
+            quoteText.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const response = await fetch(`${HITOKOTO_API}?c=d&c=f`);
+                const data = await response.json();
+                
+                quoteText.textContent = data.hitokoto;
+                
+                if (data.from) {
+                    setTimeout(() => {
+                        quoteText.innerHTML = `${data.hitokoto} <span style="opacity:0.6; font-size:0.8em;">—— ${data.from}</span>`;
+                    }, 200);
+                }
+                
+            } catch (error) {
+                console.error('获取一言失败:', error);
+                const backupQuotes = [
+                    "让每一次点击都充满温度",
+                    "复古未来，温暖设计",
+                    "像素与爱的结合",
+                    "设计是情感的传递",
+                    "温暖是最好的交互"
+                ];
+                const randomIndex = Math.floor(Math.random() * backupQuotes.length);
+                quoteText.textContent = backupQuotes[randomIndex];
+            }
+        }
+
+        // 页面加载时自动获取一言（保持不变）
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchQuote();
+            // 页面加载完成后加载作品图片
+            setTimeout(() => {
+                loadWorkThumbnails();
+            }, 500);
+        });
+
+        // 头像错误处理 - 显示动态emoji
+        function handleAvatarError() {
+            const container = document.getElementById('qqAvatarContainer');
+            const img = document.getElementById('qqAvatar');
+            
+            if (img) {
+                img.style.display = 'none';
+            }
+            
+            container.innerHTML = '<div class="avatar-fallback">👾</div>';
+        }
+
+        // 头像形状切换 -点击交互（简化版，无提示）
+        let shapeState = 0;
+        const avatarContainer = document.getElementById('qqAvatarContainer');
+        
+        if (avatarContainer) {
+            avatarContainer.addEventListener('click', function() {
+                shapeState = (shapeState + 1) % 4;
+                
+                // 移除所有形状类
+                this.classList.remove('shape-1', 'shape-2', 'shape-3');
+                
+                // 添加新形状
+                if (shapeState === 1) {
+                    this.classList.add('shape-1');
+                } else if (shapeState === 2) {
+                    this.classList.add('shape-2');
+                } else if (shapeState === 3) {
+                    this.classList.add('shape-3');
+                }
+                
+                // 点击反馈动画
+                this.style.animation = 'none';
+                setTimeout(() => {
+                    this.style.animation = '';
+                }, 10);
+            });
+        }
+
+        // 翻页卡片交互
+        const flipCard = document.getElementById('flipCard');
+        if (flipCard) {
+            flipCard.addEventListener('click', function() {
+                this.classList.toggle('flipped');
+            });
+        }
+
+        // 作品集略缩图 - 使用随机风景API
+        function loadWorkThumbnails() {
+            const thumbnails = document.querySelectorAll('.work-thumbnail');
+            
+            thumbnails.forEach((thumb, index) => {
+                const img = thumb.querySelector('img');
+                // 使用picsum.photos随机风景图片，每次访问都会不同
+                const randomSeed = 100 + index; // 不同的种子
+                const imageUrl = `https://picsum.photos/seed/${randomSeed}/400/300`;
+                
+                img.onload = function() {
+                    thumb.classList.remove('loading');
+                };
+                
+                img.onerror = function() {
+                    handleThumbnailError(this);
+                };
+                
+                // 延迟加载，增加随机性
+                setTimeout(() => {
+                    img.src = imageUrl;
+                }, index * 300); // 依次加载，增加动画感
+            });
+        }
+
+        // 缩略图错误处理
+        function handleThumbnailError(img) {
+            const thumb = img.closest('.work-thumbnail');
+            thumb.classList.remove('loading');
+            thumb.classList.add('error');
+            img.style.display = 'none';
+        }
+
+        // 生成公众号二维码（已配置您的链接）
+        function generateQRCode() {
+            const qrDisplay = document.getElementById('qrDisplay');
+            const wechatURL = 'http://weixin.qq.com/r/mp/exfRySHE1XyqrWWq90Jp';
+            
+            qrDisplay.innerHTML = '';
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'qr-loading';
+            loadingDiv.textContent = '正在生成二维码...';
+            qrDisplay.appendChild(loadingDiv);
+            
+            setTimeout(() => {
+                qrDisplay.innerHTML = '';
+                const qr = new QRCode(qrDisplay, {
+                    text: wechatURL,
+                    width: 256,
+                    height: 256,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                setTimeout(() => {
+                    const qrImg = qrDisplay.querySelector('img, canvas');
+                    if (qrImg) {
+                        qrImg.style.border = '3px solid #000';
+                        qrImg.style.boxShadow = '4px 4px 0 0 #000';
+                        qrImg.style.borderRadius = '8px';
+                        qrImg.style.padding = '5px';
+                        qrImg.style.background = '#fff';
+                        qrImg.style.maxWidth = '100%';
+                        qrImg.style.maxHeight = '100%';
+                    }
+                }, 50);
+            }, 500);
+        }
+
+        // 打开弹窗并自动生成二维码
+        function openQRModal() {
+            document.getElementById('qrModal').classList.add('active');
+            setTimeout(() => {
+                generateQRCode();
+            }, 300);
+        }
+
+        // 关闭弹窗
+        function closeQRModal() {
+            document.getElementById('qrModal').classList.remove('active');
+        }
+
+        // 智能导航栏：上滑贴合顶部，下滑隐藏（保持不变）
+        let lastScrollTop = 0;
+        const nav = document.getElementById('smartNav');
+        const scrollThreshold = 100;
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > scrollThreshold) {
+                if (scrollTop > lastScrollTop) {
+                    nav.classList.add('hidden');
+                    nav.classList.remove('scrolled');
+                } else {
+                    nav.classList.remove('hidden');
+                    nav.classList.add('scrolled');
+                }
+            } else {
+                nav.classList.remove('hidden', 'scrolled');
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+
+        // 菜单切换（保持不变）
+        const menuToggle = document.getElementById('menuToggle');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        let isMenuOpen = false;
+        
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isMenuOpen = !isMenuOpen;
+            
+            if (isMenuOpen) {
+                menuToggle.classList.add('active');
+                dropdownMenu.classList.add('active');
+            } else {
+                menuToggle.classList.remove('active');
+                dropdownMenu.classList.remove('active');
+            }
+        });
+
+        dropdownMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                isMenuOpen = false;
+                menuToggle.classList.remove('active');
+                dropdownMenu.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!menuToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                if (isMenuOpen) {
+                    isMenuOpen = false;
+                    menuToggle.classList.remove('active');
+                    dropdownMenu.classList.remove('active');
+                }
+            }
+        });
+
+        // 平滑滚动（保持不变）
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // 涟漪效果（保持不变）
+        document.querySelectorAll('.ripple-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // 留言表单处理（保持不变）
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            const message = document.getElementById('userMessage').value;
+            
+            const mailtoLink = `mailto:un@xusn.dev?subject=来自${name}的留言&body=姓名：${name}%0A邮箱：${email}%0A留言内容：%0A${message}`;
+            
+            const hiddenLink = document.createElement('a');
+            hiddenLink.href = mailtoLink;
+            hiddenLink.style.display = 'none';
+            document.body.appendChild(hiddenLink);
+            hiddenLink.click();
+            document.body.removeChild(hiddenLink);
+            
+            showSuccessMessage();
+            this.reset();
+        });
+
+        function showSuccessMessage() {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.add('active');
+            
+            setTimeout(() => {
+                successMsg.classList.remove('active');
+            }, 3000);
+        }
+
+        // 点击弹窗外部关闭（保持不变）
+        document.getElementById('qrModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeQRModal();
+            }
+        });
+    </script>
+</body>
+</html>
