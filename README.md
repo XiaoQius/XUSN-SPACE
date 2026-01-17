@@ -1,16 +1,4 @@
-我来为这个项目写一个开源介绍，需要包含：
-1. 项目名称和描述
-2.特色功能
-3. 技术栈
-4. 使用说明
-5.贡献指南
-6. 许可证
-7.联系方式
-
-风格要保持Y2K、温暖、有趣，符合项目调性。
-
-```markdown
-# XUSN·SPACE - Y2K风格个人主页
+XUSN·SPACE - Y2K风格个人主页
 
 <div align="center">
   <img src="https://img.shields.io/badge/Y2K-复古未来-ff6b9d?style=for-the-badge&logoColor=white" alt="Y2K Style">
